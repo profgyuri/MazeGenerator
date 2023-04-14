@@ -3,6 +3,7 @@
 using MazeGenerator.Library;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -116,14 +117,22 @@ public partial class MainWindow : Window
             DelayInput.Text = "0";
         }
 
-        StatusLabel.Content = "Finding shortest path...";
-
         var height = _maze.GetLength(0);
         var width = _maze.GetLength(1);
         var startPoint = (1, 0);
         var endPoint = (height - 2, width - 1);
 
-        var path = await PathFinder.FindShortestPathAsync(_maze, startPoint, endPoint);
+        List<(int, int)>? path = null;
+        if (PathFindModeComboBox.Text == "Shortest Path")
+        {
+            path = await PathFinder.FindShortestPathAsync(_maze, startPoint, endPoint);
+            StatusLabel.Content = "Finding shortest path...";
+        }
+        else if (PathFindModeComboBox.Text == "First Path")
+        {
+            path = await PathFinder.FindFirstPathAsync(_maze, startPoint, endPoint);
+            StatusLabel.Content = "Finding first path...";
+        }
 
         if (path is null)
         {

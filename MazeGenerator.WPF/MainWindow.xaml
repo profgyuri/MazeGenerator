@@ -58,6 +58,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
@@ -65,6 +66,7 @@
                     Content="Width"/>
                 <TextBox 
                     x:Name="WidthInput"
+                    Text="50"
                     materialDesign:TextFieldAssist.SuffixText="cells"/>
 
                 <Label
@@ -73,6 +75,7 @@
                 <TextBox 
                     Grid.Row="1"
                     x:Name="HeightInput" 
+                    Text="30"
                     materialDesign:TextFieldAssist.SuffixText="cells"/>
 
                 <Label
@@ -81,6 +84,7 @@
                 <TextBox 
                     Grid.Row="2"
                     x:Name="CellSizeInput"
+                    Text="10"
                     materialDesign:TextFieldAssist.SuffixText="px"/>
 
                 <Button 
@@ -90,29 +94,43 @@
 
                 <Label
                     Grid.Row="4"
-                    Content="Solving Speed"/>
-                <TextBox
+                    Content="Path Finding"/>
+                <ComboBox 
                     Grid.Row="4"
-                    x:Name="DelayInput"
-                    materialDesign:TextFieldAssist.SuffixText="ms"/>
+                    Grid.Column="1"
+                    x:Name="PathFindModeComboBox"
+                    materialDesign:ComboBoxAssist.ShowSelectedItem="True"
+                    Margin="5">
+                    <ComboBoxItem Content="Shortest Path" IsSelected="True"/>
+                    <ComboBoxItem Content="First Path"/>
+                </ComboBox>
 
                 <Label
                     Grid.Row="5"
+                    Content="Step Delay"/>
+                <TextBox
+                    Grid.Row="5"
+                    x:Name="DelayInput"
+                    Text="10"
+                    materialDesign:TextFieldAssist.SuffixText="ms"/>
+
+                <Label
+                    Grid.Row="6"
                     Content="Path Color"/>
                 <materialDesign:ColorPicker
                     x:Name="ColorPicker"
-                    Grid.Row="5"
+                    Grid.Row="6"
                     Grid.Column="1"/>
 
                 <Button 
-                    Grid.Row="6"
+                    Grid.Row="7"
                     Content="Solve Maze" 
                     Click="SolveMazeButton_Click"/>
 
                 <Label 
                     Grid.ColumnSpan="2"
                     HorizontalAlignment="Center"
-                    Grid.Row="7"
+                    Grid.Row="8"
                     x:Name="StatusLabel"
                     Content=""/>
             </Grid>
