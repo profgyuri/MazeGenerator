@@ -35,7 +35,7 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto" MinWidth="250"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
@@ -51,6 +51,7 @@
                     <ColumnDefinition Width="*" MinWidth="80"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -95,15 +96,23 @@
                     x:Name="DelayInput"
                     materialDesign:TextFieldAssist.SuffixText="ms"/>
 
-                <Button 
+                <Label
                     Grid.Row="5"
+                    Content="Path Color"/>
+                <materialDesign:ColorPicker
+                    x:Name="ColorPicker"
+                    Grid.Row="5"
+                    Grid.Column="1"/>
+
+                <Button 
+                    Grid.Row="6"
                     Content="Solve Maze" 
                     Click="SolveMazeButton_Click"/>
 
                 <Label 
                     Grid.ColumnSpan="2"
                     HorizontalAlignment="Center"
-                    Grid.Row="6"
+                    Grid.Row="7"
                     x:Name="StatusLabel"
                     Content=""/>
             </Grid>

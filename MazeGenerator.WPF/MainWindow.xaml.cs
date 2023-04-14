@@ -23,6 +23,8 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+
+        ColorPicker.Color = Colors.Blue;
     }
 
     private async void DrawPath((int, int) point, Color color)
@@ -133,7 +135,7 @@ public partial class MainWindow : Window
 
         foreach (var point in path)
         {
-            DrawPath(point, Colors.SkyBlue);
+            DrawPath(point, ColorPicker.Color);
             await Task.Delay(_solveStepDelay);
         }
 
