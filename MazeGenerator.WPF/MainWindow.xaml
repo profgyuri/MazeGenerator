@@ -103,6 +103,7 @@
                     Margin="5">
                     <ComboBoxItem Content="Shortest Path" IsSelected="True"/>
                     <ComboBoxItem Content="First Path"/>
+                    <ComboBoxItem Content="Bidirectional"/>
                 </ComboBox>
 
                 <Label

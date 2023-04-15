@@ -117,21 +117,28 @@ public partial class MainWindow : Window
             DelayInput.Text = "0";
         }
 
+        var timeStamp = System.Diagnostics.Stopwatch.StartNew();
+
         var height = _maze.GetLength(0);
         var width = _maze.GetLength(1);
         var startPoint = (1, 0);
         var endPoint = (height - 2, width - 1);
 
         List<(int, int)>? path = null;
-        if (PathFindModeComboBox.Text == "Shortest Path")
+        switch (PathFindModeComboBox.Text)
         {
-            path = await PathFinder.FindShortestPathAsync(_maze, startPoint, endPoint);
-            StatusLabel.Content = "Finding shortest path...";
-        }
-        else if (PathFindModeComboBox.Text == "First Path")
-        {
-            path = await PathFinder.FindFirstPathAsync(_maze, startPoint, endPoint);
-            StatusLabel.Content = "Finding first path...";
+            case "Shortest Path":
+                StatusLabel.Content = "Finding shortest path...";
+                path = await PathFinder.FindShortestPathAsync(_maze, startPoint, endPoint);
+                break;
+            case "First Path":
+                StatusLabel.Content = "Finding first path...";
+                path = await PathFinder.FindFirstPathAsync(_maze, startPoint, endPoint);
+                break;
+            case "Bidirectional":
+                StatusLabel.Content = "Searching from both directions...";
+                path = await PathFinder.FindBidirectionalPathAsync(_maze, startPoint, endPoint);
+                break;
         }
 
         if (path is null)
@@ -148,6 +155,9 @@ public partial class MainWindow : Window
             await Task.Delay(_solveStepDelay);
         }
 
-        StatusLabel.Content = "";
+        timeStamp.Stop();
+        var endTime = timeStamp.Elapsed.TotalMilliseconds;
+
+        StatusLabel.Content = $"Took {endTime}ms";
     }
 }
