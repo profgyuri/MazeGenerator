@@ -95,6 +95,91 @@ public class MazeGenerator
         _maze[1, 0] = 0;
         _maze[_height - 2, _width - 1] = 0;
 
+        // Add extra connections to create multiple paths
+        var maxConnections = (int)Math.Pow(Math.Log10((double)_width * _height), 2);
+        int extraConnections = _random.Next(maxConnections / 2, maxConnections);
+
+        while (extraConnections > 0)
+        {
+            y = _random.Next(1, _height - 2);
+            x = _random.Next(1, _width - 2);
+
+            // Only break walls
+            if (_maze[y, x] == 1)
+            {
+                // Check if there are two open cells horizontally or vertically
+                if ((_maze[y - 1, x] == 0 && _maze[y + 1, x] == 0 && _maze[y, x - 1] != 0 && _maze[y, x + 1] != 0) ||
+                    (_maze[y, x - 1] == 0 && _maze[y, x + 1] == 0 && _maze[y - 1, x] != 0 && _maze[y + 1, x] != 0))
+                {
+                    if (CanRemoveWall(_maze, y, x))
+                    {
+                        _maze[y, x] = 0;
+                        extraConnections--;
+                    }
+                }
+            }
+        }
+
         return _maze;
+    }
+
+    private int CountWallIslandSize(int[,] maze, int y, int x, bool[,] visited, int threshold = -1)
+    {
+        visited[y, x] = true;
+
+        int islandSize = 1;
+
+        int[] dy = { -1, 1, 0, 0 };
+        int[] dx = { 0, 0, -1, 1 };
+
+        for (int i = 0; i < 4; i++)
+        {
+            int newY = y + dy[i];
+            int newX = x + dx[i];
+
+            if (newY >= 0 && newY < maze.GetLength(0) && newX >= 0 && newX < maze.GetLength(1) &&
+                maze[newY, newX] == 1 && !visited[newY, newX])
+            {
+                islandSize += CountWallIslandSize(maze, newY, newX, visited, threshold);
+
+                // Terminate early if the island size reaches the threshold
+                if (threshold > 0 && islandSize >= threshold)
+                {
+                    return islandSize;
+                }
+            }
+        }
+
+        return islandSize;
+    }
+
+    private bool CanRemoveWall(int[,] maze, int y, int x)
+    {
+        // Remove the wall
+        maze[y, x] = 0;
+
+        bool[,] visited = new bool[maze.GetLength(0), maze.GetLength(1)];
+
+        int[] dy = { -1, 1, 0, 0 };
+        int[] dx = { 0, 0, -1, 1 };
+
+        for (int i = 0; i < 4; i++)
+        {
+            int newY = y + dy[i];
+            int newX = x + dx[i];
+
+            if (maze[newY, newX] == 1 && !visited[newY, newX])
+            {
+                var minIslandSize = 15;
+                int islandSize = CountWallIslandSize(maze, newY, newX, visited, minIslandSize);
+                if (islandSize < minIslandSize)
+                {
+                    maze[y, x] = 1;
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }
