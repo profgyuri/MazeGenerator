@@ -5,30 +5,31 @@ using System;
 public class MazeGenerator
 {
     private int _width, _height;
-    private int[,] _maze;
+    private byte[,] _maze;
     private Random _random;
 
     public int Width => _width;
     public int Height => _height;
-    public int[,] Maze => _maze;
+    public byte[,] Maze => _maze;
 
     public MazeGenerator()
     {
-        _maze = new int[_height, _width];
+        _maze = new byte[_height, _width];
         _random = new Random();
     }
 
-    public async Task<int[,]> GenerateAsync(int width, int height)
+    public async Task<byte[,]> GenerateAsync(int width, int height)
     {
         return await Task.Run(() => Generate(width, height));
     }
 
-    private int[,] Generate(int width, int height)
+    private byte[,] Generate(int width, int height)
     {
+        // Ensure the maze dimensions are odd to create a perfect maze
         _width = width % 2 == 0 ? width + 1 : width;
         _height = height % 2 == 0 ? height + 1 : height;
 
-        _maze = new int[_height, _width];
+        _maze = new byte[_height, _width];
 
         // Initialize maze with walls
         for (int i = 0; i < _height; i++)
@@ -51,21 +52,26 @@ public class MazeGenerator
             _maze[_height - 1, j] = 1;
         }
 
+        // Create a stack to store unvisited cells
         Stack<(int, int)> stack = new Stack<(int, int)>();
 
+        // Choose a random starting point
         int y = _random.Next(1, _height / 2) * 2 - 1;
         int x = _random.Next(1, _width / 2) * 2 - 1;
-        _maze[y, x] = 0;
+        _maze[y, x] = 0; // Set the starting point as a path
         stack.Push((y, x));
 
+        // Define possible movement directions
         int[] dy = { -1, 0, 1, 0 };
         int[] dx = { 0, 1, 0, -1 };
 
+        // Depth-first search algorithm
         while (stack.Count > 0)
         {
             (int cy, int cx) = stack.Peek();
             List<int> validDirections = new List<int>();
 
+            // Check for valid movement directions
             for (int i = 0; i < 4; i++)
             {
                 int ny = cy + dy[i] * 2;
@@ -77,27 +83,29 @@ public class MazeGenerator
                 }
             }
 
+            // If there are valid directions, choose one at random and move
             if (validDirections.Count > 0)
             {
                 int dir = validDirections[_random.Next(validDirections.Count)];
                 int ny = cy + dy[dir] * 2;
                 int nx = cx + dx[dir] * 2;
-                _maze[ny, nx] = 0;
-                _maze[cy + dy[dir], cx + dx[dir]] = 0;
+                _maze[ny, nx] = 0; // Set the new cell as a path
+                _maze[cy + dy[dir], cx + dx[dir]] = 0; // Set the wall between the current cell and the new cell as a path
                 stack.Push((ny, nx));
             }
-            else
+            else // If there are no valid directions, backtrack
             {
                 stack.Pop();
             }
         }
 
+        // Create entrance and exit
         _maze[1, 0] = 0;
         _maze[_height - 2, _width - 1] = 0;
 
         // Add extra connections to create multiple paths
         var maxConnections = (int)Math.Pow(Math.Log10((double)_width * _height), 2);
-        int extraConnections = _random.Next(maxConnections / 2, maxConnections);
+        var extraConnections = _random.Next(maxConnections / 2, maxConnections);
 
         while (extraConnections > 0)
         {
@@ -123,23 +131,29 @@ public class MazeGenerator
         return _maze;
     }
 
-    private int CountWallIslandSize(int[,] maze, int y, int x, bool[,] visited, int threshold = -1)
+    private int CountWallIslandSize(byte[,] maze, int y, int x, bool[,] visited, int threshold = -1)
     {
+        // Mark the current cell as visited
         visited[y, x] = true;
 
+        // Initialize the island size counter
         int islandSize = 1;
 
+        // Define possible movement directions
         int[] dy = { -1, 1, 0, 0 };
         int[] dx = { 0, 0, -1, 1 };
 
+        // Traverse the neighboring cells
         for (int i = 0; i < 4; i++)
         {
             int newY = y + dy[i];
             int newX = x + dx[i];
 
+            // Check if the neighboring cell is within the maze boundaries, has a wall, and hasn't been visited
             if (newY >= 0 && newY < maze.GetLength(0) && newX >= 0 && newX < maze.GetLength(1) &&
                 maze[newY, newX] == 1 && !visited[newY, newX])
             {
+                // Recursively count the size of the wall island
                 islandSize += CountWallIslandSize(maze, newY, newX, visited, threshold);
 
                 // Terminate early if the island size reaches the threshold
@@ -150,36 +164,46 @@ public class MazeGenerator
             }
         }
 
+        // Return the final island size
         return islandSize;
     }
 
-    private bool CanRemoveWall(int[,] maze, int y, int x)
+    private bool CanRemoveWall(byte[,] maze, int y, int x)
     {
-        // Remove the wall
+        // Remove the wall temporarily
         maze[y, x] = 0;
 
+        // Create a visited matrix to track visited cells
         bool[,] visited = new bool[maze.GetLength(0), maze.GetLength(1)];
 
+        // Define possible movement directions
         int[] dy = { -1, 1, 0, 0 };
         int[] dx = { 0, 0, -1, 1 };
 
-        for (int i = 0; i < 4; i++)
+        // Check the neighboring cells of the removed wall
+        for (byte i = 0; i < 4; i++)
         {
-            int newY = y + dy[i];
-            int newX = x + dx[i];
+            var newY = y + dy[i];
+            var newX = x + dx[i];
 
+            // Check if the neighboring cell has a wall and hasn't been visited
             if (maze[newY, newX] == 1 && !visited[newY, newX])
             {
+                // Define the minimum island size threshold
                 var minIslandSize = 15;
-                int islandSize = CountWallIslandSize(maze, newY, newX, visited, minIslandSize);
+
+                // Check if removing the wall creates a wall island smaller than the threshold
+                var islandSize = CountWallIslandSize(maze, newY, newX, visited, minIslandSize);
                 if (islandSize < minIslandSize)
                 {
+                    // Put the wall back and return false (can't remove the wall)
                     maze[y, x] = 1;
                     return false;
                 }
             }
         }
 
+        // If no small wall islands are created, return true (can remove the wall)
         return true;
     }
 }

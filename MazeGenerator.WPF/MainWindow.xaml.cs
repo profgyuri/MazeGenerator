@@ -17,7 +17,7 @@ public partial class MainWindow : Window
     private int _cellSize = 10;
     private int _solveStepDelay = 5;
     private MazeGenerator _mazeGenerator = new();
-    private int[,] _maze;
+    private byte[,] _maze;
     private SKBitmap _bitmap;
     private float _scale = Resolution.GetScaleFactor();
 
@@ -51,7 +51,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void DrawMaze(SKCanvas canvas, int[,] maze)
+    private void DrawMaze(SKCanvas canvas, byte[,] maze)
     {
         for (int y = 0; y < maze.GetLength(0); y++)
         {
@@ -92,15 +92,14 @@ public partial class MainWindow : Window
 
         // Create a new bitmap for the updated maze dimensions
         _bitmap = new SKBitmap((int)(MazeView.Width * _scale), (int)(MazeView.Height * _scale));
-        using (var canvas = new SKCanvas(_bitmap))
-        {
-            canvas.Clear(SKColors.White);
-            DrawMaze(canvas, _maze);
-        }
+
+        using var canvas = new SKCanvas(_bitmap);
+        canvas.Clear(SKColors.White);
+        DrawMaze(canvas, _maze);
 
         MazeView.InvalidateVisual(); // Force a redraw of the maze
 
-        StatusLabel.Content = "";
+        StatusLabel.Content = "The Maze is Ready!";
     }
 
     private async void SolveMazeButton_Click(object sender, RoutedEventArgs e)

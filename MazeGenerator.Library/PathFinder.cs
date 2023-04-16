@@ -3,12 +3,12 @@
 public class PathFinder
 {
     #region FindShortestPath
-    public static async Task<List<(int, int)>?> FindShortestPathAsync(int[,] maze, (int, int) startPoint, (int, int) endPoint)
+    public static async Task<List<(int, int)>?> FindShortestPathAsync(byte[,] maze, (int, int) startPoint, (int, int) endPoint)
     {
         return await Task.Run(() => FindShortestPath(maze, startPoint, endPoint));
     }
 
-    private static List<(int, int)> FindShortestPath(int[,] maze, (int, int) startPoint, (int, int) endPoint)
+    private static List<(int, int)> FindShortestPath(byte[,] maze, (int, int) startPoint, (int, int) endPoint)
     {
         int[] dy = { -1, 0, 1, 0 };
         int[] dx = { 0, 1, 0, -1 };
@@ -52,12 +52,12 @@ public class PathFinder
     #endregion
 
     #region FindFirstPath
-    public static async Task<List<(int, int)>?> FindFirstPathAsync(int[,] maze, (int, int) startPoint, (int, int) endPoint)
+    public static async Task<List<(int, int)>?> FindFirstPathAsync(byte[,] maze, (int, int) startPoint, (int, int) endPoint)
     {
         return await Task.Run(() => FindFirstPath(maze, startPoint, endPoint));
     }
 
-    private static List<(int, int)> FindFirstPath(int[,] maze, (int, int) startPoint, (int, int) endPoint)
+    private static List<(int, int)> FindFirstPath(byte[,] maze, (int, int) startPoint, (int, int) endPoint)
     {
         int[] dy = { -1, 0, 1, 0 };
         int[] dx = { 0, 1, 0, -1 };
@@ -101,7 +101,7 @@ public class PathFinder
     #endregion
 
     #region Bidirectional search
-    public static async Task<List<(int, int)>?> FindBidirectionalPathAsync(int[,] maze, (int, int) startPoint, (int, int) endPoint)
+    public static async Task<List<(int, int)>?> FindBidirectionalPathAsync(byte[,] maze, (int, int) startPoint, (int, int) endPoint)
     {
         var forwardTask = Task.Run(() => ExpandSearchAsync(maze, startPoint, endPoint));
         var backwardTask = Task.Run(() => ExpandSearchAsync(maze, endPoint, startPoint));
@@ -117,7 +117,7 @@ public class PathFinder
         return forwardPath;
     }
 
-    private static async Task<((int, int) MeetingPoint, List<(int, int)> ForwardPath, List<(int, int)> BackwardPath)> ExpandSearchAsync(int[,] maze, (int, int) startPoint, (int, int) endPoint)
+    private static async Task<((int, int) MeetingPoint, List<(int, int)> ForwardPath, List<(int, int)> BackwardPath)> ExpandSearchAsync(byte[,] maze, (int, int) startPoint, (int, int) endPoint)
     {
         return await Task.Run(() =>
         {
@@ -157,7 +157,7 @@ public class PathFinder
         });
     }
 
-    private static bool ExpandSearch(Queue<((int, int) Point, List<(int, int)> Path)> queue, HashSet<(int, int)> visited, HashSet<(int, int)> otherVisited, int[,] maze, int[] dy, int[] dx, out List<(int, int)> path)
+    private static bool ExpandSearch(Queue<((int, int) Point, List<(int, int)> Path)> queue, HashSet<(int, int)> visited, HashSet<(int, int)> otherVisited, byte[,] maze, int[] dy, int[] dx, out List<(int, int)> path)
     {
         path = null;
         if (queue.Count == 0) return false;
