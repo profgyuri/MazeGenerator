@@ -193,6 +193,12 @@ public partial class MainWindow : Window
 
     private void SaveButton_Click(object sender, RoutedEventArgs e)
     {
+        if (_bitmap is null)
+        {
+            StatusLabel.Content = "Generate a maze first!";
+            return;
+        }
+
         var saveFileDialog = new SaveFileDialog
         {
             Filter = "JPEG Files (*.jpg)|*.jpg|All Files (*.*)|*.*",
