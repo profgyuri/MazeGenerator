@@ -1,10 +1,12 @@
 ﻿namespace MazeGenerator.WPF;
 
 using MazeGenerator.Library;
+using Microsoft.Win32;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -179,5 +181,29 @@ public partial class MainWindow : Window
 
         StatusLabel.Content = $"Solution found in {(int)endTime}ms";
         LoadingIcon.Visibility = Visibility.Collapsed;
+    }
+
+    void SaveSKBitmapAsJpeg(SKBitmap bitmap, string filePath)
+    {
+        using SKImage image = SKImage.FromBitmap(bitmap);
+        using SKData data = image.Encode(SKEncodedImageFormat.Jpeg, 100);
+        using Stream fileStream = File.OpenWrite(filePath);
+        data.SaveTo(fileStream);
+    }
+
+    private void SaveButton_Click(object sender, RoutedEventArgs e)
+    {
+        var saveFileDialog = new SaveFileDialog
+        {
+            Filter = "JPEG Files (*.jpg)|*.jpg|All Files (*.*)|*.*",
+            DefaultExt = ".jpg",
+            FileName = "maze"
+        };
+
+        if (saveFileDialog.ShowDialog() == true)
+        {
+            string filePath = saveFileDialog.FileName;
+            SaveSKBitmapAsJpeg(_bitmap, filePath);
+        }
     }
 }
