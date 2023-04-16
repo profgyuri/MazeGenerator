@@ -137,7 +137,7 @@
                     Orientation="Horizontal">
                     <Label 
                         x:Name="StatusLabel"
-                        MaxWidth="200"
+                        MaxWidth="220"
                         Content="Start Generating amazing Mazes!"/>
                     <ProgressBar
                         x:Name="LoadingIcon"
