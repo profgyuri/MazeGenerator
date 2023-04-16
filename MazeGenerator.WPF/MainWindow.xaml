@@ -112,7 +112,7 @@
                 <TextBox
                     Grid.Row="5"
                     x:Name="DelayInput"
-                    Text="10"
+                    Text="0"
                     materialDesign:TextFieldAssist.SuffixText="ms"/>
 
                 <Label
@@ -128,12 +128,21 @@
                     Content="Solve Maze" 
                     Click="SolveMazeButton_Click"/>
 
-                <Label 
+                <StackPanel
                     Grid.ColumnSpan="2"
                     HorizontalAlignment="Center"
                     Grid.Row="8"
-                    x:Name="StatusLabel"
-                    Content=""/>
+                    Orientation="Horizontal">
+                    <Label 
+                        x:Name="StatusLabel"
+                        Content=""/>
+                    <ProgressBar
+                        x:Name="LoadingIcon"
+                        Visibility="Collapsed"
+                        IsIndeterminate="True"
+                        Style="{StaticResource MaterialDesignCircularProgressBar}"
+                        Value="0" />
+                </StackPanel>
             </Grid>
         </Border>
 

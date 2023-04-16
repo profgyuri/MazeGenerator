@@ -104,8 +104,9 @@ public class MazeGenerator
         _maze[_height - 2, _width - 1] = 0;
 
         // Add extra connections to create multiple paths
-        var maxConnections = (int)Math.Pow(Math.Log10((double)_width * _height), 2);
-        var extraConnections = _random.Next(maxConnections / 2, maxConnections);
+        var area = _width * _height;
+        var maxConnections = Math.Pow(Math.Log10(Math.Sqrt(area) * Math.Pow(area, 2 / 3d)) - 2, 1.75d);
+        var extraConnections = _random.Next((int)(maxConnections * 0.65), (int)maxConnections);
 
         while (extraConnections > 0)
         {

@@ -19,6 +19,7 @@ public partial class MainWindow : Window
     private MazeGenerator _mazeGenerator = new();
     private byte[,] _maze;
     private SKBitmap _bitmap;
+    private SKPaint _wallPaint = new SKPaint() { Color = SKColors.Black };
     private float _scale = Resolution.GetScaleFactor();
 
     public MainWindow()
@@ -57,13 +58,14 @@ public partial class MainWindow : Window
         {
             for (int x = 0; x < maze.GetLength(1); x++)
             {
-                SKRect rect = new SKRect(x * _cellSize * _scale, y * _cellSize * _scale, (x + 1) * _cellSize * _scale, (y + 1) * _cellSize * _scale);
-                SKPaint paint = new SKPaint
+                if (maze[y, x] == 0)
                 {
-                    Color = maze[y, x] == 1 ? SKColors.Black : SKColors.White
-                };
+                    continue;
+                }
 
-                canvas.DrawRect(rect, paint);
+                SKRect rect = new SKRect(x * _cellSize * _scale, y * _cellSize * _scale, (x + 1) * _cellSize * _scale, (y + 1) * _cellSize * _scale);
+
+                canvas.DrawRect(rect, _wallPaint);
             }
         }
     }
@@ -84,6 +86,7 @@ public partial class MainWindow : Window
         }
 
         StatusLabel.Content = "Generating Maze...";
+        LoadingIcon.Visibility = Visibility.Visible;
 
         _maze = await _mazeGenerator.GenerateAsync(width, height);
 
@@ -95,11 +98,12 @@ public partial class MainWindow : Window
 
         using var canvas = new SKCanvas(_bitmap);
         canvas.Clear(SKColors.White);
-        DrawMaze(canvas, _maze);
+        await Task.Run(() => DrawMaze(canvas, _maze));
 
         MazeView.InvalidateVisual(); // Force a redraw of the maze
 
         StatusLabel.Content = "The Maze is Ready!";
+        LoadingIcon.Visibility = Visibility.Collapsed;
     }
 
     private async void SolveMazeButton_Click(object sender, RoutedEventArgs e)
@@ -140,6 +144,8 @@ public partial class MainWindow : Window
                 break;
         }
 
+        LoadingIcon.Visibility = Visibility.Visible;
+
         if (path is null)
         {
             MessageBox.Show("No path found.");
@@ -157,6 +163,7 @@ public partial class MainWindow : Window
         timeStamp.Stop();
         var endTime = timeStamp.Elapsed.TotalMilliseconds;
 
-        StatusLabel.Content = $"Took {endTime}ms";
+        StatusLabel.Content = $"Solution found in {(int)endTime}ms";
+        LoadingIcon.Visibility = Visibility.Collapsed;
     }
 }
