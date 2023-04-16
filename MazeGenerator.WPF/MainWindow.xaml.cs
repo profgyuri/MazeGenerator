@@ -3,6 +3,7 @@
 using MazeGenerator.Library;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
@@ -82,6 +83,19 @@ public partial class MainWindow : Window
             (!int.TryParse(CellSizeInput.Text, out _cellSize) && (_cellSize > 100 || _cellSize < 1)))
         {
             MessageBox.Show("Please enter valid width, height and cell size values!");
+            return;
+        }
+
+        try
+        {
+            checked
+            {
+                int size = width * height * _cellSize;
+            }
+        }
+        catch (OverflowException)
+        {
+            MessageBox.Show(this, "The requested maze is too big to draw! Try using smaller cell size, or smaller dimensions!", "Your maze is way too big!");
             return;
         }
 
